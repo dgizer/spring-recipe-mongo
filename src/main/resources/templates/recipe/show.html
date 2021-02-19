@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="data:,">
+    <title>Recipe Show</title>
+    <!-- Latest stable compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+          crossorigin="anonymous"
+          th:href="@{/webjars/bootstrap/4.6.0/css/bootstrap.min.css}">
+
+    <script src="/webjars/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Latest stable compiled and minified js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+            crossorigin="anonymous"
+            th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.min.js}"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+</head>
+<body>
+<div class="container-fluid" style="...">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 mx-auto mb-3">
+            <div class="card border-primary mt-3">
+                <div class="card-header bg-primary bg-gradient">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h1 class="card-title text-white" th:text="${recipe.description}">Recipe Description Here!</h1>
+                        </div>
+                        <div class="col-md-2">
+                            <a class="btn btn-primary btn-light btn-sm" href="#"
+                               th:href="@{'/recipe/' + ${recipe.id} + '/image'}" role="button"><i class="bi bi-file-image"></i>Change image</a>
+                        </div>
+                        <div class="col-md-1">
+                            <a class="btn btn-secondary btn-sm" th:href="@{'/recipe/' + ${recipe.id} + '/update'}" role="button"><i class="bi bi-pencil-fill"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <h5>Categories:</h5>
+                        </div>
+                        <div class="col-md-4">
+                            <ul>
+                                <li th:remove="all">Categ one</li>
+                                <li th:remove="all">Categ two</li>
+                                <li th:each="category : ${recipe.getCategories()}" th:text="${category.description}">Categ three</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <img src="../../static/images/guacamole400x400X.jpg"
+                                 th:src="@{'/recipe/' + ${recipe.id} + '/recipeimage'}"
+                                 width="200" height="200">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5>Preparation time:</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <p th:text="${recipe.getPrepTime()}+' min'">30 min</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h5>Difficulty:</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <p th:text="${recipe.getDifficulty()}">Easy</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5>Coocktime:</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <p th:text="${recipe.getCookTime()}+' min'">30 min</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h5>Servings:</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <p th:text="${recipe.getServings()}">4</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5>Source:</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <p th:text="${recipe.getSource()}">30 min</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h5>URL:</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <p><a href="#" th:href="@{${recipe.getUrl()}}" th:text="${recipe.getUrl()}">http://www.example.com</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-primary mt-3">
+                <div class="card-header bg-primary bg-gradient">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <h1 class="card-title text-white">Ingredients</h1>
+                        </div>
+                        <div class="col-md-1">
+                            <a class="btn btn-secondary btn-sm" th:href="@{'/recipe/' +${recipe.id} + '/ingredients'}" role="button"><i class="bi bi-view-list"></i>View</a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <ul>
+                                <li th:remove="all">1 Cup of milk</li>
+                                <li th:remove="all">1 Teaspoon of chocoloate</li>
+                                <li  th:each="ingredient : ${recipe.getIngredients()}"
+                                     th:text="${ingredient.getAmount()} + ' '
+                                     + ${ingredient.getUom().getDescription()} + ' '
+                                     + ${ingredient.getDescription()}">1 Teaspoon of sugar</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-primary mt-3">
+                <div class="card-header bg-primary bg-gradient">
+                    <h1 class="card-title text-white">Directions</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p th:text="${recipe.getDirections()}">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-primary mt-3">
+                <div class="card-header bg-primary bg-gradient">
+                    <h1 class="card-title text-white">Notes</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p th:text="${recipe.getNotes().getRecipeNotes()}">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

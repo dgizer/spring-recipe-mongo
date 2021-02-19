@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'org.springframework.boot' version '2.4.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'jacoco'
+}
+
+group = 'com.springframework'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compileOnly('org.projectlombok:lombok')
+    runtime('org.springframework.boot:spring-boot-devtools')
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.hibernate.validator:hibernate-validator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    compile('org.webjars:bootstrap:4.6.0')
+    compile('org.webjars:jquery:3.5.1')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+//export test coverage
+test {
+    useJUnitPlatform()
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
