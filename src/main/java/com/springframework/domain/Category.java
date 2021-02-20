@@ -1,14 +1,11 @@
 package com.springframework.domain;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
-@Data
-@EqualsAndHashCode(exclude = {"recipes"})
+@Getter
+@Setter
 @NoArgsConstructor
 public class Category {
 

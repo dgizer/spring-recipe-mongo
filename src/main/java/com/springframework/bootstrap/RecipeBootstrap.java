@@ -10,14 +10,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,15 +35,14 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         loadCategories();
         loadUom();
-        try {
-            recipeRepository.saveAll(getRecipes());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+
+        List<Recipe> recipes = getRecipes();
+        recipeRepository.saveAll(recipes);
+
         log.debug("Loading Bootstrap data...");
     }
 
@@ -87,14 +80,17 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         unitOfMeasureRepository.save(uom6);
 
         UnitOfMeasure uom7 = UnitOfMeasure.builder().description("Each").build();
-        unitOfMeasureRepository.save(uom7);
+        UnitOfMeasure saved7 =  unitOfMeasureRepository.save(uom7);
+
+        System.out.println(saved7.getDescription() + " " + uom7.getDescription());
+        System.out.println(unitOfMeasureRepository.findByDescription("Each").get().getDescription());
 
         UnitOfMeasure uom8 = UnitOfMeasure.builder().description("Pint").build();
         unitOfMeasureRepository.save(uom8);
     }
 
 
-    private List<Recipe> getRecipes() throws MalformedURLException {
+    private List<Recipe> getRecipes() {
         List<Recipe> recipes = new ArrayList<>(2);
 
         //get optionals
@@ -157,8 +153,6 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 
         guacRecipe.getCategories().add(americanCat);
         guacRecipe.getCategories().add(mexicanCat);
-
-//        guacRecipe.setImage(prepareImgFromUrl("https://www.simplyrecipes.com/wp-content/uploads/2018/07/Guacamole-LEAD-1-768x1075.jpg"));
 
         recipes.add(guacRecipe);
         log.debug("Guacamole recipe is ready...");
@@ -229,49 +223,10 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         tacosRecipe.getCategories().add(americanCat);
         tacosRecipe.getCategories().add(mexicanCat);
 
-        //tacosRecipe.setImage(prepareImgFromUrl("https://www.simplyrecipes.com/wp-content/uploads/2017/05/2017-05-29-GrilledChickenTacos-3-768x1075.jpg"));
-
         recipes.add(tacosRecipe);
         log.debug("Tacos receip is ready...");
 
         return recipes;
-    }
-
-    private Byte[] prepareImgFromUrl(String strurl) {
-        Byte[] byteImg = null;
-        URL url = null;
-        try {
-            url = new URL(strurl);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        InputStream is = null;
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            is = url.openStream();
-            byte[] byteChunk = new byte[4096];
-            int n;
-            while ((n = is.read(byteChunk)) > 0 ){
-                baos.write(byteChunk,0,n);
-            }
-            byteImg = new Byte[baos.toByteArray().length];
-            for (int i=0; i<byteImg.length; i++)
-                byteImg[i] = baos.toByteArray()[i];
-
-        } catch (IOException e) {
-            System.err.printf("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return byteImg;
     }
 
     private UnitOfMeasure getfromOpt(Optional<UnitOfMeasure> uomOpt){
