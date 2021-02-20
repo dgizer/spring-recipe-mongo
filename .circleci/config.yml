@@ -20,11 +20,13 @@ jobs:
 
     steps:
       - checkout
+
+      # Download and cache dependencies
       - restore_cache:
-          key:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
       - run: gradle dependencies
 
@@ -40,7 +42,7 @@ jobs:
           name: Save test results
           command: |
             mkdir -p ~/junit/
-            find .- type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
           when: always
 
       - store_test_results:
