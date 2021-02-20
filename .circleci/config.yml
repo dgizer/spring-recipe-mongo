@@ -28,7 +28,11 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: ./gradlew dependencies
+      - run:
+          name: Gradle dependencies
+          command: |
+              sudo chmod +x gradlew
+              ./gradlew dependencies
 
       - save_cache:
           paths:
@@ -41,8 +45,8 @@ jobs:
       - run:
           name: Save test results
           command: |
-            mkdir -p ~/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
+              mkdir -p ~/junit/
+              find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
           when: always
 
       - store_test_results:
