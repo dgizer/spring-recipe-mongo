@@ -43,6 +43,8 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        loadCategories();
+        loadUom();
         try {
             recipeRepository.saveAll(getRecipes());
         } catch (MalformedURLException e) {
@@ -51,47 +53,49 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         log.debug("Loading Bootstrap data...");
     }
 
+    private void loadCategories() {
+            Category cat1 = Category.builder().description("American").build();
+            categoryRepository.save(cat1);
+
+            Category cat2 = Category.builder().description("Italian").build();
+            categoryRepository.save(cat2);
+
+            Category cat3 = Category.builder().description("Mexican").build();
+            categoryRepository.save(cat3);
+
+            Category cat4 = Category.builder().description("Fast Food").build();
+            categoryRepository.save(cat4);
+    }
+
+    private void loadUom() {
+        UnitOfMeasure uom1 = UnitOfMeasure.builder().description("Teaspoon").build();
+        unitOfMeasureRepository.save(uom1);
+
+        UnitOfMeasure uom2 = UnitOfMeasure.builder().description("Tablespoon").build();
+        unitOfMeasureRepository.save(uom2);
+
+        UnitOfMeasure uom3 = UnitOfMeasure.builder().description("Cup").build();
+        unitOfMeasureRepository.save(uom3);
+
+        UnitOfMeasure uom4 = UnitOfMeasure.builder().description("Pinch").build();
+        unitOfMeasureRepository.save(uom4);
+
+        UnitOfMeasure uom5 = UnitOfMeasure.builder().description("Ounce").build();
+        unitOfMeasureRepository.save(uom5);
+
+        UnitOfMeasure uom6 = UnitOfMeasure.builder().description("Dash").build();
+        unitOfMeasureRepository.save(uom6);
+
+        UnitOfMeasure uom7 = UnitOfMeasure.builder().description("Each").build();
+        unitOfMeasureRepository.save(uom7);
+
+        UnitOfMeasure uom8 = UnitOfMeasure.builder().description("Pint").build();
+        unitOfMeasureRepository.save(uom8);
+    }
+
+
     private List<Recipe> getRecipes() throws MalformedURLException {
         List<Recipe> recipes = new ArrayList<>(2);
-
-        //get UnitOfMeasures
-       /* Optional<UnitOfMeasure> eachUomOpt = unitOfMeasureRepository.findByDescription("Each");
-        if(!eachUomOpt.isPresent()) {
-            throw new RuntimeException("Expected UOM not found");
-        }
-
-        Optional<UnitOfMeasure> tableSpoonUomOpt = unitOfMeasureRepository.findByDescription("Tablespoon");
-        if(!tableSpoonUomOpt.isPresent()) {
-            throw new RuntimeException("Expected UOM not found");
-        }
-
-        Optional<UnitOfMeasure> teaSpoonUomOpt = unitOfMeasureRepository.findByDescription("Teaspoon");
-        if(!teaSpoonUomOpt.isPresent()) {
-            throw new RuntimeException("Expected UOM not found");
-        }
-
-        Optional<UnitOfMeasure> dashUomOpt = unitOfMeasureRepository.findByDescription("Dash");
-        if(!dashUomOpt.isPresent()) {
-            throw new RuntimeException("Expected UOM not found");
-        }
-
-        Optional<UnitOfMeasure> pintUomOpt = unitOfMeasureRepository.findByDescription("Pint");
-        if(!pintUomOpt.isPresent()) {
-            throw new RuntimeException("Expected UOM not found");
-        }
-
-        Optional<UnitOfMeasure> cupsUomOpt = unitOfMeasureRepository.findByDescription("Cup");
-        if(!cupsUomOpt.isPresent()) {
-            throw new RuntimeException("Expected UOM not found");
-        }
-
-        //get optionals
-        UnitOfMeasure eachUom = eachUomOpt.get();
-        UnitOfMeasure tableSpoonUom = tableSpoonUomOpt.get();
-        UnitOfMeasure teaSpoonUom = teaSpoonUomOpt.get();
-        UnitOfMeasure dashUom = dashUomOpt.get();
-        UnitOfMeasure pintUom = pintUomOpt.get();
-        UnitOfMeasure cupsUom = cupsUomOpt.get();*/
 
         //get optionals
         UnitOfMeasure eachUom = getfromOpt(unitOfMeasureRepository.findByDescription("Each"));
