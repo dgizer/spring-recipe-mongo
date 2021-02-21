@@ -87,7 +87,6 @@ public class IngredientServiceImpl implements IngredientService {
             if (ingrIsNew == true){
 
                 Optional<Ingredient> commandId = recipeSaved.getIngredients().stream()
-                        .filter(ingredient -> ingredient.getRecipe().getId().equals(command.getRecipeId()))
                         .filter(ingredient -> ingredient.getDescription().equals(command.getDescription()))
                         .filter(ingredient -> ingredient.getAmount().equals(command.getAmount()))
                         .filter(ingredient -> ingredient.getUom().getId().equals(command.getUom().getId()))

@@ -7,7 +7,6 @@ import com.springframework.repositories.RecipeRepository;
 import com.springframework.repositories.UnitOfMeasureRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +17,6 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-@Profile("default")
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private final RecipeRepository recipeRepository;
@@ -81,9 +79,6 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 
         UnitOfMeasure uom7 = UnitOfMeasure.builder().description("Each").build();
         UnitOfMeasure saved7 =  unitOfMeasureRepository.save(uom7);
-
-        System.out.println(saved7.getDescription() + " " + uom7.getDescription());
-        System.out.println(unitOfMeasureRepository.findByDescription("Each").get().getDescription());
 
         UnitOfMeasure uom8 = UnitOfMeasure.builder().description("Pint").build();
         unitOfMeasureRepository.save(uom8);
@@ -196,7 +191,7 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
                 "\n" +
                 "You could also easily double or even triple this recipe for a larger party. A taco and a cold beer on a warm day? Now that’s living!");
         tacosRecipe.setNotes(tacoNotes);
-        tacoNotes.setRecipe(tacosRecipe);
+        //tacoNotes.setRecipe(tacosRecipe);
 
         tacosRecipe.addIngredient(new Ingredient("ancho chili powder", new BigDecimal(2), tableSpoonUom));
         tacosRecipe.addIngredient(new Ingredient("dried oregano", new BigDecimal(1), tableSpoonUom));
