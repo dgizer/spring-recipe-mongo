@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataMongoTest
 class UnitOfMeasureRepositoryIT {
 
+
     @Autowired
     private UnitOfMeasureRepository unitOfMeasureRepository;
 

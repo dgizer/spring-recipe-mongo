@@ -5,9 +5,7 @@ import com.springframework.enums.Difficulty;
 import com.springframework.repositories.CategoryRepository;
 import com.springframework.repositories.RecipeRepository;
 import com.springframework.repositories.UnitOfMeasureRepository;
-import com.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -24,9 +22,6 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     private final RecipeRepository recipeRepository;
     private final CategoryRepository categoryRepository;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
-
-    @Autowired
-    UnitOfMeasureReactiveRepository uomReactRepo;
 
     public RecipeBootstrap(RecipeRepository recipeRepository,
                            CategoryRepository categoryRepository,
@@ -47,11 +42,6 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         List<Recipe> recipes = getRecipes();
         recipeRepository.saveAll(recipes);
         log.debug("Loading Bootstrap data...");
-
-        log.error("#####");
-        log.error("Count " + uomReactRepo.count().block().toString());
-
-
     }
 
     private void loadCategories() {

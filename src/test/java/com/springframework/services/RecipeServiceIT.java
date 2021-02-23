@@ -14,11 +14,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-//@Disabled("Need to be fixed for Mongo")
+@Disabled
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 class RecipeServiceIT {
     private static final String NEW_DESCRIPTION = "New description";
+
 
     @Autowired
     RecipeService service;
@@ -32,11 +33,13 @@ class RecipeServiceIT {
     @Autowired
     RecipeToCommand recipeToCommand;
 
-    @Disabled("Disable for Mongo")
+
     @Test
     void saveRecipeCommand() {
         //given
+
         Iterable<Recipe> recipes = repository.findAll();
+        System.out.println("recipes size: " + repository.count());
         Recipe testRecipe = recipes.iterator().next();
         RecipeCommand testComand = recipeToCommand.convert(testRecipe);
 
