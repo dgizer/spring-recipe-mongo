@@ -100,12 +100,15 @@ public class IngredientServiceImpl implements IngredientService {
                 }
             }
 
+            IngredientCommand savedCommand = ingredientToCommand.convert(recipeSaved.getIngredients()
+                    .stream()
+                    .filter(recipeIngr -> recipeIngr.getId().equals(command.getId()))
+                    .findFirst()
+                    .get());
+            savedCommand.setRecipeId(recipe.getId());
+
             //todo check if fails
-            return ingredientToCommand.convert(recipeSaved.getIngredients()
-                            .stream()
-                            .filter(recipeIngr -> recipeIngr.getId().equals(command.getId()))
-                            .findFirst()
-                            .get());
+            return savedCommand;
         }
         return null;
     }    //todo test saveIngredient() by integration test for testing properly the id assignment to new ingredient

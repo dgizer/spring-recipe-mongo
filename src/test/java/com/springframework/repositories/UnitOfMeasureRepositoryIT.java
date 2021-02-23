@@ -1,11 +1,12 @@
 package com.springframework.repositories;
 
+import com.springframework.bootstrap.RecipeBootstrap;
 import com.springframework.domain.UnitOfMeasure;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
@@ -13,16 +14,27 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Disabled("For Mongo DB the things for IT should be fixed")
 @ExtendWith(SpringExtension.class)
-//@DataJpaTest
+@DataMongoTest
 class UnitOfMeasureRepositoryIT {
 
     @Autowired
     private UnitOfMeasureRepository unitOfMeasureRepository;
 
+    @Autowired
+    RecipeRepository recipeRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
     @BeforeEach
     void setUp() {
+        recipeRepository.deleteAll();
+        categoryRepository.deleteAll();
+        unitOfMeasureRepository.deleteAll();
+
+        RecipeBootstrap bootstrap = new RecipeBootstrap(recipeRepository,categoryRepository,unitOfMeasureRepository);
+        bootstrap.onApplicationEvent(null);
     }
 
     @Test

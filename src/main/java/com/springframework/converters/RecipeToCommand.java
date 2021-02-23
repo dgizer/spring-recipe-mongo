@@ -42,7 +42,7 @@ public class RecipeToCommand implements Converter<Recipe, RecipeCommand> {
         command.setIngredients(source.getIngredients()
                 .stream()
                 .map(ingrConverter::convert)
-                .collect(Collectors.toSet())
+                .collect(Collectors.toList())
         );
         command.setImage(source.getImage());
         command.setDifficulty(source.getDifficulty());
@@ -50,7 +50,7 @@ public class RecipeToCommand implements Converter<Recipe, RecipeCommand> {
         command.setCategories(source.getCategories()
                 .stream()
                 .map(catConverter::convert)
-                .collect(Collectors.toSet())
+                .collect(Collectors.toList())
         );
         return command;
     }

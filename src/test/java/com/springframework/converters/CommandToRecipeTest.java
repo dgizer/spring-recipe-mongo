@@ -9,8 +9,8 @@ import com.springframework.enums.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
@@ -70,7 +70,7 @@ class CommandToRecipeTest {
         ingr1.setId(ID_ING1);
         IngredientCommand ingr2 = new IngredientCommand();
         ingr2.setId(ID_ING2);
-        Set<IngredientCommand> ingredientCommandSet = new HashSet<>();
+        List<IngredientCommand> ingredientCommandSet = new ArrayList<>();
         ingredientCommandSet.add(ingr1);
         ingredientCommandSet.add(ingr2);
 
@@ -86,7 +86,7 @@ class CommandToRecipeTest {
         cat1.setId(ID_CAT1);
         CategoryCommand cat2 = new CategoryCommand();
         cat2.setId(ID_CAT2);
-        Set<CategoryCommand> categoryCommandSet = new HashSet<>();
+        List<CategoryCommand> categoryCommandSet = new ArrayList<>();
         categoryCommandSet.add(cat1);
         categoryCommandSet.add(cat2);
 

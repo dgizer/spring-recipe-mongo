@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Disabled("Need to be fixed for Mongo")
+//@Disabled("Need to be fixed for Mongo")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 class RecipeServiceIT {

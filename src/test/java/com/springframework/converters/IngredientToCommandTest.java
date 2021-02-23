@@ -51,7 +51,7 @@ class IngredientToCommandTest {
         UnitOfMeasure uom  = new UnitOfMeasure();
         uom.setId(UOM_ID);
         ingredient.setUom(uom);
-        ingredient.setRecipe(recipe);
+        //ingredient.setRecipe(recipe);
 
         //when
         IngredientCommand command = converter.convert(ingredient);
@@ -59,7 +59,7 @@ class IngredientToCommandTest {
         //then
         assertNotNull(command);
         assertNotNull(command.getUom());
-        assertEquals(RECIPE_ID,command.getRecipeId());
+        //assertEquals(RECIPE_ID,command.getRecipeId());
         assertEquals(ID, command.getId());
         assertEquals(DESCRIPTION, command.getDescription());
         assertEquals(AMOUNT, command.getAmount());

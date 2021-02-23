@@ -5,7 +5,6 @@ import com.springframework.domain.Recipe;
 import com.springframework.exceptions.NotFoundException;
 import com.springframework.services.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -14,7 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,13 +61,15 @@ class RecipeControllerTest {
                 .andExpect(view().name("404error"));
     }
 
+    //todo write test for non-valid id in path
+/*
     @Test
-    @Disabled("For String Id's there are no error generated")
     void testGetRecipeNumberFormatWrong() throws Exception {
         mockMvc.perform(get("/recipe/asd/show"))
                 .andExpect(status().isBadRequest())
                 .andExpect(view().name("400error"));
     }
+*/
 
     @Test
     public void testGetNewRecipe() throws Exception {
@@ -96,13 +98,13 @@ class RecipeControllerTest {
 
     }
 
-    /*
+
     @Test
     public void testPostToRecipeFailingValidation() throws Exception {
         RecipeCommand command = new RecipeCommand();
-        command.setId(2L);
+        command.setId("2L");
 
-        when(recipeService.saveRecipeCommand(any())).thenReturn(command);
+//        when(recipeService.saveRecipeCommand(any())).thenReturn(command);
 
         mockMvc.perform(post("/recipe")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -114,7 +116,7 @@ class RecipeControllerTest {
                 .andExpect(view().name("recipe/recipeform"));
 
     }
-*/
+
     @Test
     public void  testUpdateRecipe() throws Exception {
         RecipeCommand command = new RecipeCommand();
