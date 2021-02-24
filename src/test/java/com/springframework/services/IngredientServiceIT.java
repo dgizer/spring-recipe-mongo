@@ -7,7 +7,6 @@ import com.springframework.converters.IngredientToCommand;
 import com.springframework.converters.UnitOfMeasureToCommand;
 import com.springframework.domain.Ingredient;
 import com.springframework.domain.Recipe;
-import com.springframework.repositories.RecipeRepository;
 import com.springframework.repositories.reactive.IngredientReactiveRepository;
 import com.springframework.repositories.reactive.RecipeReactiveRepository;
 import com.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
@@ -32,9 +31,6 @@ class IngredientServiceIT {
     RecipeReactiveRepository recipeRepo;
 
     @Autowired
-    RecipeRepository recipeSimpleRepo;
-
-    @Autowired
     IngredientReactiveRepository ingredientRepo;
 
     @Autowired
@@ -54,7 +50,7 @@ class IngredientServiceIT {
         toUomConverter = new CommandToUnitOfMeasure();
         toIngConverter = new CommandToIngredient(toUomConverter);
 
-        service = new IngredientServiceImpl(recipeRepo, recipeSimpleRepo, ingredientRepo,
+        service = new IngredientServiceImpl(recipeRepo, ingredientRepo,
                                     ingConverter,uomRepo,toIngConverter);
     }
 
