@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -73,7 +74,7 @@ class IngredientControllerTest {
         command.setRecipeId(recId);
 
         //when
-        when(ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(command);
+        when(ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(Mono.just(command));
 
         //then
         mockMvc.perform(get("/recipe/1/ingredient/2/show"))
@@ -92,7 +93,7 @@ class IngredientControllerTest {
         Collections.addAll(uomSet,uom1,uom2);
 
         //when
-        when(ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(command);
+        when(ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(Mono.just(command));
         when(uomService.listAllUoms()).thenReturn(Flux.just(uom1, uom2));
 
         //then
@@ -115,7 +116,7 @@ class IngredientControllerTest {
         command.setRecipeId(recId);
 
         //when
-        when(ingredientService.saveIngredient(any())).thenReturn(command);
+        when(ingredientService.saveIngredient(any())).thenReturn(Mono.just(command));
 
         //then
         mockMvc.perform(post("/recipe/"+recId+"/ingredient/save")
@@ -158,6 +159,8 @@ class IngredientControllerTest {
     void deleteIngredient() throws Exception {
         String recId = "1L";
         String id = "2L";
+
+        when(ingredientService.deleteIngredientById(anyString(),anyString())).thenReturn(Mono.empty());
 
         mockMvc.perform(get("/recipe/"+recId+"/ingredient/"+id+"/delete"))
                 .andExpect(status().is3xxRedirection())

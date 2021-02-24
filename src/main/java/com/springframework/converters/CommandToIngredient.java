@@ -27,8 +27,8 @@ public class CommandToIngredient implements Converter<IngredientCommand, Ingredi
         }
 
         final Ingredient ingredient = new Ingredient();
-        Ingredient testing = new Ingredient();
-        if (source.getId().length() != 0)
+
+        if (source.getId() != null && source.getId().length() != 0)
             ingredient.setId(source.getId());
         else
             ingredient.setId(UUID.randomUUID().toString());

@@ -38,21 +38,16 @@ public class IngredientController {
     @GetMapping("recipe/{recipeId}/ingredient/{id}/show")
     public String showIngredient(@PathVariable String recipeId, @PathVariable String id, Model model){
         log.debug("getting particluar ingredient with id: " + id+", of Recipe with id: "+recipeId);
-        model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId,id));
-        IngredientCommand command = ingredientService.findByRecipeIdAndIngredientId(recipeId,id);
-
-        log.error("command id: " + command.getId());
-        log.error("Recipe id: " + command.getRecipeId());
-
+        model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId,id).block());
         return "recipe/ingredients/show";
     }
 
     @GetMapping("recipe/{recipeId}/ingredient/{id}/update")
     public String updateIngredient(@PathVariable String recipeId, @PathVariable String id, Model model){
         log.debug("getting particluar ingredient with id: " + id+", of Recipe with id: "+recipeId);
-        model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId, id));
+        model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId, id).block());
         log.debug("get the list of uoms");
-        model.addAttribute("uomList",uomService.listAllUoms());
+        model.addAttribute("uomList",uomService.listAllUoms().collectList().block());
         return "recipe/ingredients/ingredientform";
     }
 
@@ -60,7 +55,7 @@ public class IngredientController {
     // between recipe and ingredient via ID)
     @PostMapping("recipe/{recipeId}/ingredient/save")
     public String saveIngredient(@ModelAttribute IngredientCommand command) {
-        IngredientCommand savedCommand = ingredientService.saveIngredient(command);
+        IngredientCommand savedCommand = ingredientService.saveIngredient(command).block();
         log.debug("saved ingredient id: " + savedCommand.getId());
         log.debug("saved recipe id: " + savedCommand.getRecipeId());
 
@@ -91,7 +86,7 @@ public class IngredientController {
     @GetMapping("recipe/{recId}/ingredient/{id}/delete")
     public String deleteIngredient(@PathVariable String recId,
                                    @PathVariable String id) {
-        ingredientService.deleteIngredientById(recId,id);
+        ingredientService.deleteIngredientById(recId,id).block();
         log.debug("deleting ingredient id: "+id);
         return "redirect:/recipe/"+recId+"/ingredients";
     }
