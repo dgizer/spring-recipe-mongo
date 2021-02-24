@@ -8,6 +8,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class CommandToIngredient implements Converter<IngredientCommand, Ingredient> {
 
@@ -25,7 +27,12 @@ public class CommandToIngredient implements Converter<IngredientCommand, Ingredi
         }
 
         final Ingredient ingredient = new Ingredient();
-        ingredient.setId(source.getId());
+        Ingredient testing = new Ingredient();
+        if (source.getId().length() != 0)
+            ingredient.setId(source.getId());
+        else
+            ingredient.setId(UUID.randomUUID().toString());
+
         if (source.getRecipeId() != null) {
             Recipe recipe = new Recipe();
             recipe.setId(source.getId());

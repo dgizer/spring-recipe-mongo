@@ -9,20 +9,21 @@ import com.springframework.converters.UnitOfMeasureToCommand;
 import com.springframework.domain.Ingredient;
 import com.springframework.domain.Recipe;
 import com.springframework.domain.UnitOfMeasure;
-import com.springframework.repositories.IngredientRepository;
-import com.springframework.repositories.RecipeRepository;
-import com.springframework.repositories.UnitOfMeasureRepository;
+import com.springframework.repositories.reactive.IngredientReactiveRepository;
+import com.springframework.repositories.reactive.RecipeReactiveRepository;
+import com.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,14 +35,14 @@ class IngredientServiceImplTest {
     private static final String ING3_ID = "3L";
 
     @Mock
-    private RecipeRepository recipeRepository;
+    private RecipeReactiveRepository recipeRepository;
     @Mock
-    IngredientRepository ingredientRepository;
+    IngredientReactiveRepository ingredientRepository;
     @Mock
-    private UnitOfMeasureRepository uomRepo;
+    private UnitOfMeasureReactiveRepository uomRepo;
 
-    private IngredientToCommand ingredientToCommand;
-    private CommandToIngredient commandToIngredient;
+    private final IngredientToCommand ingredientToCommand;
+    private final CommandToIngredient commandToIngredient;
 
     private IngredientService ingredientService;
 
@@ -70,7 +71,7 @@ class IngredientServiceImplTest {
         recipe.addIngredient(ingr1);
         recipe.addIngredient(ingr2);
         recipe.addIngredient(ingr3);
-        Optional<Recipe> recipeOptional = Optional.of(recipe);
+        Mono<Recipe> recipeOptional = Mono.just(recipe);
 
         //when
         when(recipeRepository.findById(anyString())).thenReturn(recipeOptional);
@@ -99,7 +100,7 @@ class IngredientServiceImplTest {
         uomcom.setId("10L");
         command.setUom(uomcom);
 
-        Optional<Recipe> recipeOpt = Optional.of(new Recipe());
+        Mono<Recipe> recipeOpt = Mono.just(new Recipe());
         Recipe recipeSaved = new Recipe();
 
         Ingredient ingredient = new Ingredient();
@@ -113,7 +114,7 @@ class IngredientServiceImplTest {
         recipeSaved.addIngredient(ingredient);
 
         when(recipeRepository.findById(anyString())).thenReturn(recipeOpt);
-        when(recipeRepository.save(any())).thenReturn(recipeSaved);
+        when(recipeRepository.save(any())).thenReturn(Mono.just(recipeSaved));
 
         //when
         IngredientCommand savedComamnd = ingredientService.saveIngredient(command);
@@ -144,11 +145,10 @@ class IngredientServiceImplTest {
         savedRecipe.setId(recId);
         savedRecipe.addIngredient(ingr2);
 
-        when(recipeRepository.findById(anyString())).thenReturn(Optional.of(recipe));
+        when(recipeRepository.findById(anyString())).thenReturn(Mono.just(recipe));
 
         //when
         ingredientService.deleteIngredientById(recId,id1);
-
 
         //then
         verify(recipeRepository).findById(anyString());

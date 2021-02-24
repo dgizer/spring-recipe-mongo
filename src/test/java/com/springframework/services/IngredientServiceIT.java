@@ -5,9 +5,11 @@ import com.springframework.converters.CommandToIngredient;
 import com.springframework.converters.CommandToUnitOfMeasure;
 import com.springframework.converters.IngredientToCommand;
 import com.springframework.converters.UnitOfMeasureToCommand;
-import com.springframework.repositories.IngredientRepository;
-import com.springframework.repositories.RecipeRepository;
-import com.springframework.repositories.UnitOfMeasureRepository;
+import com.springframework.domain.Ingredient;
+import com.springframework.domain.Recipe;
+import com.springframework.repositories.reactive.IngredientReactiveRepository;
+import com.springframework.repositories.reactive.RecipeReactiveRepository;
+import com.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -26,13 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class IngredientServiceIT {
     @Autowired
-    RecipeRepository recipeRepo;
+    RecipeReactiveRepository recipeRepo;
 
     @Autowired
-    IngredientRepository ingredientRepo;
+    IngredientReactiveRepository ingredientRepo;
 
     @Autowired
-    UnitOfMeasureRepository uomRepo;
+    UnitOfMeasureReactiveRepository uomRepo;
 
     IngredientService service;
 
@@ -54,14 +56,23 @@ class IngredientServiceIT {
 
     @Test
     void findByRecipeIdAndIngredientId() {
+        Recipe recipe = new Recipe();
+        recipe.addIngredient(new Ingredient());
+        Recipe savedRecipe = recipeRepo.save(recipe).block();
 
+        assertNotNull(savedRecipe);
 
-        IngredientCommand command = service.findByRecipeIdAndIngredientId("1L","2L");
+        String recipeId = savedRecipe.getId();
+        String ingrId = savedRecipe.getIngredients().iterator().next().getId();
 
+        IngredientCommand command = service.findByRecipeIdAndIngredientId(recipeId,ingrId);
+
+        System.out.println("recipe Id: " + recipeId);
+        System.out.println("ingred Id: " + ingrId);
 
         assertNotNull(command);
-        assertEquals("2L", command.getId());
-        assertEquals("1L", command.getRecipeId());
+        assertEquals(ingrId, command.getId());
+        assertEquals(recipeId, command.getRecipeId());
     }
 
 }

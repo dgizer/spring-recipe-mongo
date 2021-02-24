@@ -1,6 +1,7 @@
 package com.springframework.controllers;
 
 import com.springframework.commands.IngredientCommand;
+import com.springframework.commands.RecipeCommand;
 import com.springframework.commands.UnitOfMeasureCommand;
 import com.springframework.services.IngredientService;
 import com.springframework.services.RecipeService;
@@ -38,6 +39,11 @@ public class IngredientController {
     public String showIngredient(@PathVariable String recipeId, @PathVariable String id, Model model){
         log.debug("getting particluar ingredient with id: " + id+", of Recipe with id: "+recipeId);
         model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId,id));
+        IngredientCommand command = ingredientService.findByRecipeIdAndIngredientId(recipeId,id);
+
+        log.error("command id: " + command.getId());
+        log.error("Recipe id: " + command.getRecipeId());
+
         return "recipe/ingredients/show";
     }
 
@@ -50,6 +56,8 @@ public class IngredientController {
         return "recipe/ingredients/ingredientform";
     }
 
+    //TODO IMPORTANT!!! Saving new ingredient is not wworking due to issues of ids (now there are no relations
+    // between recipe and ingredient via ID)
     @PostMapping("recipe/{recipeId}/ingredient/save")
     public String saveIngredient(@ModelAttribute IngredientCommand command) {
         IngredientCommand savedCommand = ingredientService.saveIngredient(command);
@@ -61,14 +69,20 @@ public class IngredientController {
 
     @GetMapping("recipe/{recipeId}/ingredient/new")
     public String addIngredient(@PathVariable String recipeId, Model model) {
+        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId);
+        //todo handle error throwing properly
+        if (recipeCommand == null)
+            log.error("No recipe with id: " + recipeId);
+            //throw new RuntimeException("No recipe with id: " + recipeId);
+
         IngredientCommand newIngr = new IngredientCommand();
-        newIngr.setRecipeId(recipeId);
         model.addAttribute("ingredient", newIngr);
         log.debug("new ingredient created for recipe id:" + recipeId);
         //init uom
         newIngr.setUom(new UnitOfMeasureCommand());
+        newIngr.setRecipeId(recipeId);
 
-        model.addAttribute("uomList", uomService.listAllUoms());
+        model.addAttribute("uomList", uomService.listAllUoms().collectList().block());
         log.debug("got list of uoms");
 
         return "recipe/ingredients/ingredientform";

@@ -11,7 +11,7 @@ import java.util.UUID;
 @Setter
 public class Ingredient {
 
-    //todo solve the problem with ID assignement via saving Ingredients in a separate Document in Mongo
+    //todo solve the problem with ID assignment via saving Ingredients in a separate Document in Mongo
     private String id = UUID.randomUUID().toString();
     private String description;
     private BigDecimal amount;

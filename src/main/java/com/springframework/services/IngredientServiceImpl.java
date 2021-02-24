@@ -5,27 +5,29 @@ import com.springframework.converters.CommandToIngredient;
 import com.springframework.converters.IngredientToCommand;
 import com.springframework.domain.Ingredient;
 import com.springframework.domain.Recipe;
-import com.springframework.repositories.IngredientRepository;
-import com.springframework.repositories.RecipeRepository;
-import com.springframework.repositories.UnitOfMeasureRepository;
+import com.springframework.repositories.reactive.IngredientReactiveRepository;
+import com.springframework.repositories.reactive.RecipeReactiveRepository;
+import com.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
 @Slf4j
 @Service
 public class IngredientServiceImpl implements IngredientService {
-    private final RecipeRepository recipeRepository;
-    private final IngredientRepository ingredientRepository;
+    private final RecipeReactiveRepository recipeRepository;
+    private final IngredientReactiveRepository ingredientRepository;
     private final IngredientToCommand ingredientToCommand;
-    private final UnitOfMeasureRepository uomRepo;
+    private final UnitOfMeasureReactiveRepository uomRepo;
     private final CommandToIngredient commandToIngredient;
 
-    public IngredientServiceImpl(RecipeRepository recipeRepository,
-                                 IngredientRepository ingredientRepository, IngredientToCommand ingredientToCommand,
-                                 UnitOfMeasureRepository uomRepo,
+    public IngredientServiceImpl(RecipeReactiveRepository recipeRepository,
+                                 IngredientReactiveRepository ingredientRepository,
+                                 IngredientToCommand ingredientToCommand,
+                                 UnitOfMeasureReactiveRepository uomRepo,
                                  CommandToIngredient commandToIngredient) {
         this.recipeRepository = recipeRepository;
         this.ingredientRepository = ingredientRepository;
@@ -36,33 +38,35 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
-        Optional<Recipe> recipeOpt = recipeRepository.findById(recipeId);
-        if (!recipeOpt.isPresent()){
+        Mono<Recipe> recipeOpt = recipeRepository.findById(recipeId);
+        /*if (recipeOpt.block() == null){
             //todo implementation error handling
             log.debug("recipe id is not found: " + recipeId);
-        }
-        Recipe recipe = recipeOpt.get();
+        }*/
+        Recipe recipe = recipeOpt.block();
         Optional<IngredientCommand> commandOpt = recipe.getIngredients().stream()
                 .filter(ingredient -> ingredient.getId().equals(ingredientId))
-                .map(ingredient -> ingredientToCommand.convert(ingredient)).findFirst();
+                .map(ingredientToCommand::convert).findFirst();
         if (!commandOpt.isPresent()) {
             //todo implement error handler
             log.debug("Ingredient id is not found: " + ingredientId);
         }
-        return commandOpt.get();
+        IngredientCommand command = commandOpt.get();
+        command.setRecipeId(recipeId);
+        return command;
     }
 
     @Override
     @Transactional
     public IngredientCommand saveIngredient(IngredientCommand command){
-        Optional<Recipe> recipeOpt = recipeRepository.findById(command.getRecipeId());
+        Mono<Recipe> recipeOpt = recipeRepository.findById(command.getRecipeId());
         boolean ingrIsNew = false;
 
-        if (!recipeOpt.isPresent()) {
+        /*if (!recipeOpt.isPresent()) {
             //todo handle appropriately the error
             log.debug("Recipe with given id not found: id: " + command.getRecipeId());
-        } else {
-            Recipe recipe = recipeOpt.get();
+        } else {*/
+            Recipe recipe = recipeOpt.block();
 
             Optional<Ingredient> foundIngrOpt = recipe.getIngredients()
                     .stream()
@@ -74,15 +78,15 @@ public class IngredientServiceImpl implements IngredientService {
                 foundIngr.setDescription(command.getDescription());
                 foundIngr.setAmount(command.getAmount());
                 foundIngr.setUom(uomRepo
-                        .findById(command.getUom().getId())
-                        .orElseThrow(() -> new RuntimeException("Unit of measure not found"))); //todo appropriate exception handler
+                        .findById(command.getUom().getId()).block());
+                        //.orElseThrow(() -> new RuntimeException("Unit of measure not found"))); //todo appropriate exception handler
             } else {
                 //add new Ingredient
                 ingrIsNew = true;
                 recipe.addIngredient(commandToIngredient.convert(command));
 
             }
-            Recipe recipeSaved = recipeRepository.save(recipe);
+            Recipe recipeSaved = recipeRepository.save(recipe).block();
 
             if (ingrIsNew == true){
 
@@ -92,8 +96,9 @@ public class IngredientServiceImpl implements IngredientService {
                         .filter(ingredient -> ingredient.getUom().getId().equals(command.getUom().getId()))
                         .findFirst();
 
-                if(commandId.isPresent())
+                if(commandId.isPresent()) {
                     command.setId(commandId.get().getId());
+                }
                 else {
                     //todo handle exception
                     log.debug("error in adding new ingredient");
@@ -109,8 +114,8 @@ public class IngredientServiceImpl implements IngredientService {
 
             //todo check if fails
             return savedCommand;
-        }
-        return null;
+        //}
+        //return null;
     }    //todo test saveIngredient() by integration test for testing properly the id assignment to new ingredient
          //todo add test for existing ingredient
 
@@ -118,16 +123,16 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     @Transactional
     public void deleteIngredientById(String recid, String id) {
-        Optional<Recipe> recipeOpt = recipeRepository.findById(recid);
+        Mono<Recipe> recipeOpt = recipeRepository.findById(recid);
 
-        if(recipeOpt.isPresent()) {
-            recipeOpt.get().getIngredients()
+        //if(recipeOpt.isPresent()) {
+            recipeOpt.block().getIngredients()
                     .removeIf(ingredient -> ingredient.getId().equals(id));
-            recipeRepository.save(recipeOpt.get());
+            recipeRepository.save(recipeOpt.block());
             ingredientRepository.deleteById(id);
-        } else {
+        /*} else {
             log.debug("raise an exception");
-        }
+        }*/
     }
 }
 

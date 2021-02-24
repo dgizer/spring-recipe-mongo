@@ -3,15 +3,17 @@ package com.springframework.services;
 import com.springframework.commands.UnitOfMeasureCommand;
 import com.springframework.converters.UnitOfMeasureToCommand;
 import com.springframework.domain.UnitOfMeasure;
-import com.springframework.repositories.UnitOfMeasureRepository;
+import com.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +28,7 @@ class UnitOfMeasureServiceImplTest {
     UnitOfMeasureService service;
 
     @Mock
-    UnitOfMeasureRepository uomRepo;
+    UnitOfMeasureReactiveRepository uomRepo;
 
     @BeforeEach
     void setUp() {
@@ -43,10 +45,10 @@ class UnitOfMeasureServiceImplTest {
         Set<UnitOfMeasure> uomcSet = new HashSet<>();
         Collections.addAll(uomcSet, uomc1, uomc2);
 
-        when(uomRepo.findAll()).thenReturn(uomcSet);
+        when(uomRepo.findAll()).thenReturn(Flux.just(uomc1,uomc2));
 
         //when
-        Set<UnitOfMeasureCommand> foundSet = service.listAllUoms();
+        List<UnitOfMeasureCommand> foundSet = service.listAllUoms().collectList().block();
 
         //then
         assertNotNull(foundSet);

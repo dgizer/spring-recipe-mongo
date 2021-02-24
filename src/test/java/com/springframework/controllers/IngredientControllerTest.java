@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import reactor.core.publisher.Flux;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -92,7 +93,7 @@ class IngredientControllerTest {
 
         //when
         when(ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(command);
-        when(uomService.listAllUoms()).thenReturn(uomSet);
+        when(uomService.listAllUoms()).thenReturn(Flux.just(uom1, uom2));
 
         //then
         mockMvc.perform(get("/recipe/1/ingredient/2/update"))
@@ -142,7 +143,7 @@ class IngredientControllerTest {
         Collections.addAll(uomSet, uom1, uom2);
 
         //when(recipeService.findById(anyLong())).thenReturn(command);
-        when(uomService.listAllUoms()).thenReturn(uomSet);
+        when(uomService.listAllUoms()).thenReturn(Flux.just(uom1, uom2));
 
         mockMvc.perform(get("/recipe/1/ingredient/new"))
                 .andExpect(status().isOk())
