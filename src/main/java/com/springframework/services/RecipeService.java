@@ -2,13 +2,13 @@ package com.springframework.services;
 
 import com.springframework.commands.RecipeCommand;
 import com.springframework.domain.Recipe;
-
-import java.util.Set;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface RecipeService {
-     Set<Recipe> getRecipes();
-     Recipe findById(String id);
-     RecipeCommand saveRecipeCommand(RecipeCommand command);
-     RecipeCommand findCommandById(String id);
-     void deleteById(String id);
+     Flux<Recipe> getRecipes();
+     Mono<Recipe> findById(String id);
+     Mono<RecipeCommand> saveRecipeCommand(RecipeCommand command);
+     Mono<RecipeCommand> findCommandById(String id);
+     Mono<Void> deleteById(String id);
 }

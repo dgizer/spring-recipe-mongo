@@ -4,7 +4,7 @@ import com.springframework.commands.RecipeCommand;
 import com.springframework.converters.CommandToRecipe;
 import com.springframework.converters.RecipeToCommand;
 import com.springframework.domain.Recipe;
-import com.springframework.repositories.RecipeRepository;
+import com.springframework.repositories.reactive.RecipeReactiveRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,7 @@ class RecipeServiceIT {
     RecipeService service;
 
     @Autowired
-    RecipeRepository repository;
+    RecipeReactiveRepository repository;
 
     @Autowired
     CommandToRecipe commandToRecipe;
@@ -38,14 +38,14 @@ class RecipeServiceIT {
     void saveRecipeCommand() {
         //given
 
-        Iterable<Recipe> recipes = repository.findAll();
+        Iterable<Recipe> recipes = repository.findAll().toIterable();
         System.out.println("recipes size: " + repository.count());
         Recipe testRecipe = recipes.iterator().next();
         RecipeCommand testComand = recipeToCommand.convert(testRecipe);
 
         //when
         testComand.setDescription(NEW_DESCRIPTION);
-        RecipeCommand savedComand = service.saveRecipeCommand(testComand);
+        RecipeCommand savedComand = service.saveRecipeCommand(testComand).block();
 
         //then
         assertEquals(NEW_DESCRIPTION, savedComand.getDescription());

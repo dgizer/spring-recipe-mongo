@@ -31,7 +31,7 @@ public class IngredientController {
     @GetMapping("/recipe/{recipeId}/ingredients")
     public String showIngredients(@PathVariable String recipeId, Model model) {
         log.debug("Getting ingredients for Recipe id:" + recipeId);
-        model.addAttribute("recipe",recipeService.findCommandById(recipeId));
+        model.addAttribute("recipe",recipeService.findCommandById(recipeId).block());
         return "recipe/ingredients/list";
     }
 
@@ -64,7 +64,7 @@ public class IngredientController {
 
     @GetMapping("recipe/{recipeId}/ingredient/new")
     public String addIngredient(@PathVariable String recipeId, Model model) {
-        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId);
+        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId).block();
         //todo handle error throwing properly
         if (recipeCommand == null)
             log.error("No recipe with id: " + recipeId);

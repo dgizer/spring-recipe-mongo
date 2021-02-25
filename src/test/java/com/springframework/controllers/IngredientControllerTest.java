@@ -53,7 +53,7 @@ class IngredientControllerTest {
         String id1 = "1L";
         RecipeCommand command = new RecipeCommand();
         command.setId(id1);
-        when(recipeService.findCommandById(anyString())).thenReturn(command);
+        when(recipeService.findCommandById(anyString())).thenReturn(Mono.just(command));
 
         //when
         mockMvc.perform(get("/recipe/"+id1+"/ingredients"))
@@ -133,17 +133,17 @@ class IngredientControllerTest {
     @Test
     void addIngredient() throws Exception {
 
-        RecipeCommand command = new RecipeCommand();
-        command.setId("1L");
+        RecipeCommand recipe = new RecipeCommand();
+        recipe.setId("1L");
 
         UnitOfMeasureCommand uom1 = new UnitOfMeasureCommand();
         uom1.setId("2L");
         UnitOfMeasureCommand uom2 = new UnitOfMeasureCommand();
         uom2.setId("3L");
-        Set<UnitOfMeasureCommand> uomSet = new HashSet<>();
-        Collections.addAll(uomSet, uom1, uom2);
+        //Set<UnitOfMeasureCommand> uomSet = new HashSet<>();
+        //Collections.addAll(uomSet, uom1, uom2);
 
-        //when(recipeService.findById(anyLong())).thenReturn(command);
+        when(recipeService.findCommandById(anyString())).thenReturn(Mono.just(recipe));
         when(uomService.listAllUoms()).thenReturn(Flux.just(uom1, uom2));
 
         mockMvc.perform(get("/recipe/1/ingredient/new"))
