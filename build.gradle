@@ -21,8 +21,8 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.16'
     compile('org.springframework.boot:spring-boot-starter-data-mongodb')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    //compile('org.springframework.boot:spring-boot-starter-webflux')
+    //compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-webflux')
     compileOnly('org.projectlombok:lombok')
     runtime('org.springframework.boot:spring-boot-devtools')
     compile('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0')

@@ -1,10 +1,8 @@
 package com.springframework.controllers;
 
-import com.springframework.commands.RecipeCommand;
 import com.springframework.services.ImageService;
 import com.springframework.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 @Slf4j
 @Controller
@@ -42,7 +35,7 @@ public class ImageController {
         return "redirect:/recipe/"+recipeId+"/show";
     }
 
-    @GetMapping("recipe/{recipeId}/recipeimage")
+/*    @GetMapping("recipe/{recipeId}/recipeimage")
     public void renderImageFromDB(@PathVariable String recipeId, HttpServletResponse response) throws IOException {
         RecipeCommand command = recipeService.findCommandById(recipeId).block();
         if (command.getImage() != null) {
@@ -59,5 +52,5 @@ public class ImageController {
         } else {
             log.debug("image is not present");
         }
-    }
+    }*/
 }

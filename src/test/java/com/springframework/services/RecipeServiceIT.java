@@ -5,7 +5,6 @@ import com.springframework.converters.CommandToRecipe;
 import com.springframework.converters.RecipeToCommand;
 import com.springframework.domain.Recipe;
 import com.springframework.repositories.reactive.RecipeReactiveRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Disabled
+//@Disabled
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 class RecipeServiceIT {
@@ -39,7 +38,7 @@ class RecipeServiceIT {
         //given
 
         Iterable<Recipe> recipes = repository.findAll().toIterable();
-        System.out.println("recipes size: " + repository.count());
+        System.out.println("recipes size: " + repository.count().block());
         Recipe testRecipe = recipes.iterator().next();
         RecipeCommand testComand = recipeToCommand.convert(testRecipe);
 

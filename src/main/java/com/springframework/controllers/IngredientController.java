@@ -9,10 +9,10 @@ import com.springframework.services.UnitOfMeasureService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Controller
@@ -20,6 +20,13 @@ public class IngredientController {
     private final RecipeService recipeService;
     private final IngredientService ingredientService;
     private final UnitOfMeasureService uomService;
+
+    private WebDataBinder webDataBinder;
+
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder){
+        this.webDataBinder = webDataBinder;
+    }
 
     public IngredientController(RecipeService recipeService, IngredientService ingredientService,
                                 UnitOfMeasureService uomService) {
@@ -31,23 +38,23 @@ public class IngredientController {
     @GetMapping("/recipe/{recipeId}/ingredients")
     public String showIngredients(@PathVariable String recipeId, Model model) {
         log.debug("Getting ingredients for Recipe id:" + recipeId);
-        model.addAttribute("recipe",recipeService.findCommandById(recipeId).block());
+        model.addAttribute("recipe",recipeService.findCommandById(recipeId));
         return "recipe/ingredients/list";
     }
 
     @GetMapping("recipe/{recipeId}/ingredient/{id}/show")
     public String showIngredient(@PathVariable String recipeId, @PathVariable String id, Model model){
         log.debug("getting particluar ingredient with id: " + id+", of Recipe with id: "+recipeId);
-        model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId,id).block());
+        model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId,id));
         return "recipe/ingredients/show";
     }
 
     @GetMapping("recipe/{recipeId}/ingredient/{id}/update")
     public String updateIngredient(@PathVariable String recipeId, @PathVariable String id, Model model){
         log.debug("getting particluar ingredient with id: " + id+", of Recipe with id: "+recipeId);
-        model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId, id).block());
+        model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId, id));
         log.debug("get the list of uoms");
-        model.addAttribute("uomList",uomService.listAllUoms().collectList().block());
+        model.addAttribute("uomList",uomService.listAllUoms());
         return "recipe/ingredients/ingredientform";
     }
 
@@ -55,6 +62,11 @@ public class IngredientController {
     // between recipe and ingredient via ID)
     @PostMapping("recipe/{recipeId}/ingredient/save")
     public String saveIngredient(@ModelAttribute IngredientCommand command) {
+        webDataBinder.validate();
+        BindingResult bindingResult = webDataBinder.getBindingResult();
+        if (bindingResult.hasErrors()) {
+            return "recipe/ingredients/ingredientform";
+        }
         IngredientCommand savedCommand = ingredientService.saveIngredient(command).block();
         log.debug("saved ingredient id: " + savedCommand.getId());
         log.debug("saved recipe id: " + savedCommand.getRecipeId());
@@ -64,11 +76,8 @@ public class IngredientController {
 
     @GetMapping("recipe/{recipeId}/ingredient/new")
     public String addIngredient(@PathVariable String recipeId, Model model) {
-        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId).block();
-        //todo handle error throwing properly
-        if (recipeCommand == null)
-            log.error("No recipe with id: " + recipeId);
-            //throw new RuntimeException("No recipe with id: " + recipeId);
+        Mono<RecipeCommand> recipeCommand = recipeService.findCommandById(recipeId)
+                .switchIfEmpty(Mono.error(new RuntimeException("No recipe with id: " + recipeId)));
 
         IngredientCommand newIngr = new IngredientCommand();
         model.addAttribute("ingredient", newIngr);
@@ -77,7 +86,7 @@ public class IngredientController {
         newIngr.setUom(new UnitOfMeasureCommand());
         newIngr.setRecipeId(recipeId);
 
-        model.addAttribute("uomList", uomService.listAllUoms().collectList().block());
+        model.addAttribute("uomList", uomService.listAllUoms());
         log.debug("got list of uoms");
 
         return "recipe/ingredients/ingredientform";
@@ -86,7 +95,7 @@ public class IngredientController {
     @GetMapping("recipe/{recId}/ingredient/{id}/delete")
     public String deleteIngredient(@PathVariable String recId,
                                    @PathVariable String id) {
-        ingredientService.deleteIngredientById(recId,id).block();
+        ingredientService.deleteIngredientById(recId,id);
         log.debug("deleting ingredient id: "+id);
         return "redirect:/recipe/"+recId+"/ingredients";
     }

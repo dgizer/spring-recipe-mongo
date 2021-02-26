@@ -116,11 +116,8 @@ public class IngredientServiceImpl implements IngredientService {
 
 
     @Override
-    @Transactional
     public Mono<Void> deleteIngredientById(String recid, String id) {
         Recipe recipe = recipeRepository.findById(recid).block();
-        //Optional<Recipe> recipeOpt = recipeSimpleRepo.findById(recid);
-
         if(recipe != null) {
             recipe.getIngredients()
                     .removeIf(ingredient -> ingredient.getId().equals(id));

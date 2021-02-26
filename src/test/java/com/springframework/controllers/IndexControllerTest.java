@@ -6,49 +6,51 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.ui.Model;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(MockitoExtension.class)
+@WebFluxTest(IndexController.class)
 class IndexControllerTest {
 
     private IndexController controller;
 
-    @Mock
+    @MockBean
     private RecipeService recipeService;
 
-    @Mock
+    @MockBean
     private Model model;
+
+    @Autowired
+    WebTestClient webClient;
 
     @BeforeEach
     void setUp() {
         controller = new IndexController(recipeService);
+        //webClient = WebTestClient.bindToController(controller).build();
     }
 
     @Test
-    void testMockMVC() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+    void testWebClient() throws Exception {
+        when(recipeService.getRecipes()).thenReturn(Flux.empty());
 
-        when(recipeService.getRecipes()).thenReturn(Flux.fromIterable(Arrays.asList(new Recipe())));
-
-        mockMvc.perform(get("/"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("index"));
+        webClient.get().uri("/")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody();
     }
 
     @Test
@@ -64,7 +66,7 @@ class IndexControllerTest {
 
         when(recipeService.getRecipes()).thenReturn(Flux.fromIterable(recipes));
 
-        ArgumentCaptor<List<Recipe>> argumentCaptor = ArgumentCaptor.forClass(ArrayList.class);
+        ArgumentCaptor<Flux<Recipe>> argumentCaptor = ArgumentCaptor.forClass(Flux.class);
 
         //when
         String view = controller.getIndexPage(model);
@@ -74,7 +76,7 @@ class IndexControllerTest {
         verify(recipeService, times(1)).getRecipes();
         verify(model, times(1)).addAttribute(eq("recipes"),argumentCaptor.capture());
 
-        List<Recipe> setInController = argumentCaptor.getValue();
+        List<Recipe> setInController = argumentCaptor.getValue().collectList().block();
         assertEquals(2, setInController.size());
     }
 }

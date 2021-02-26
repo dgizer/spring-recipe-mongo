@@ -39,23 +39,5 @@ public class ImageServiceImpl implements ImageService {
                 });
         recipeRepository.save(recipeMono.block()).block();
         return Mono.empty();
-
-/*        Recipe recipe = recipeRepository.findById(id).block();
-        if(recipe != null){
-            try {
-                Byte[] byteObj = new Byte[file.getBytes().length];
-                for (int i=0;  i<file.getBytes().length; i++) {
-                    byteObj[i] = file.getBytes()[i];
-                }
-                recipe.setImage(byteObj);
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-            recipeRepository.save(recipe).block();
-        } else {
-            //todo handle an exception
-            log.debug("Recipe is not present: id "+id);
-        }
-        return Mono.empty();*/
     }
 }

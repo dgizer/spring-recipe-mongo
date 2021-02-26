@@ -42,16 +42,6 @@ public class RecipeServiceImpl implements RecipeService {
         return recipeRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Recipe is not present! ID value " + id + " is missed")))
                 .map(recipeToCommand::convert);
-
-        /*return recipeRepository.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Recipe is not present! ID value " + id + " is missed")))
-                .map(recipe -> {
-                    RecipeCommand command = recipeToCommand.convert(recipe);
-                    command.getIngredients().forEach(ing -> {
-                        ing.setRecipeId(command.getId());
-                    });
-                    return command;
-                });*/
     }
 
     @Override
